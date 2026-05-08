@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: file_index_db
+    restart: always
+    environment:
+      POSTGRES_USER: index_user
+      POSTGRES_PASSWORD: index_pass
+      POSTGRES_DB: file_index_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
