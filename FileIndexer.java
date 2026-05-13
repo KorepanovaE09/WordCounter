@@ -1,3 +1,4 @@
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -13,7 +14,7 @@ public class FileIndexer {
 
     public static void main(String[] args) {
 
-        System.out.println("🚀 СТАРТ ПРОГРАММЫ");
+        System.out.println("СТАРТ ПРОГРАММЫ");
 
         String rootPath = "D:\\ПОЛИТЕХ\\мага\\2\\WordCounter\\data";
 
@@ -35,15 +36,12 @@ public class FileIndexer {
             e.printStackTrace();
         }
 
-        System.out.println("📊 ИТОГ В ПАМЯТИ");
-        // printIndex();
-
-        System.out.println("🏁 КОНЕЦ ПРОГРАММЫ");
+        System.out.println("КОНЕЦ ПРОГРАММЫ");
     }
 
     public static void processFile(String filePath) {
 
-        System.out.println("📄 Обрабатываю: " + filePath);
+        System.out.println("Обрабатка: " + filePath);
 
         ConcurrentHashMap<String, Integer> localMap = new ConcurrentHashMap<>();
 
@@ -66,26 +64,25 @@ public class FileIndexer {
             }
 
         } catch (IOException e) {
-            System.out.println("❌ Ошибка файла: " + filePath);
+            System.out.println("Ошибка файла: " + filePath);
             e.printStackTrace();
         }
 
         index.put(filePath, localMap);
 
-        System.out.println("💾 Сохраняю в БД: " + filePath);
+        System.out.println("Сохранение в БД: " + filePath);
 
         saveToDatabase(filePath, localMap);
     }
 
     public static void saveToDatabase(String filePath, Map<String, Integer> wordMap) {
 
-        System.out.println("🔌 Подключение к БД...");
+        System.out.println("Подключение к БД...");
 
         try (Connection conn = DB.getConnection()) {
 
-            System.out.println("✅ Подключение успешно");
+            System.out.println("Подключение успешно");
 
-            // вставка файла (гарантированно возвращает id)
             PreparedStatement psFile = conn.prepareStatement(
                     "INSERT INTO files(file_path) VALUES (?) " +
                             "ON CONFLICT (file_path) DO UPDATE SET file_path = EXCLUDED.file_path " +
@@ -97,12 +94,12 @@ public class FileIndexer {
             ResultSet rs = psFile.executeQuery();
 
             if (!rs.next()) {
-                throw new RuntimeException("❌ Не удалось получить file_id");
+                throw new RuntimeException("Не удалось получить file_id");
             }
 
             int fileId = rs.getInt(1);
 
-            System.out.println("🆔 fileId = " + fileId);
+            System.out.println("fileId = " + fileId);
 
             PreparedStatement psWord = conn.prepareStatement(
                     "INSERT INTO word_counts(file_id, word, count) VALUES (?, ?, ?)"
@@ -120,23 +117,23 @@ public class FileIndexer {
 
             psWord.executeBatch();
 
-            System.out.println("📥 Сохранено слов: " + count);
+            System.out.println("Сохранено слов: " + count);
 
         } catch (Exception e) {
-            System.out.println("❌ ОШИБКА БД для файла: " + filePath);
+            System.out.println("ОШИБКА БД для файла: " + filePath);
             e.printStackTrace();
         }
     }
 
     public static void printIndex() {
 
-        System.out.println("📊 ЧАСТОТНОСТЬ СЛОВ В ФАЙЛАХ");
+        System.out.println("ЧАСТОТНОСТЬ СЛОВ В ФАЙЛАХ");
 
         for (Map.Entry<String, ConcurrentHashMap<String, Integer>> fileEntry : index.entrySet()) {
 
             String fileName = Paths.get(fileEntry.getKey()).getFileName().toString();
 
-            System.out.println("\n📄 Файл: " + fileName);
+            System.out.println("\nФайл: " + fileName);
 
             fileEntry.getValue().entrySet().stream()
                     .sorted((a, b) -> b.getValue() - a.getValue())

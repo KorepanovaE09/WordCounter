@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Подсчет слов</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="conteiner">
+        <div class="upload">
+            <h2>Загрузка файла</h2>
+
+            <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
+                <input type="file" name="file">
+                <button type="submit">Загрузить</button>
+            </form>
+
+            <div id="uploadResult"></div>
+        </div>
+
+        <div class="search">
+            <h2>Поиск Слова</h2>
+
+            <form id="searchForm" action="/search" method="get">
+                <input id = "wordInput" type="text" name="word" placeholder="Введите слово">
+                <button type="submit">Найти</button>
+            </form>
+
+            <div id="searchResult"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("uploadForm").addEventListener("submit", async function (e) {
+            e.preventDefault()
+            let formData = new FormData(this);
+            try{
+                let response = await fetch("/upload", {
+                    method: "POST",
+                    body: formData
+                })
+                let text = await response.text();
+                document.getElementById("uploadResult").innerHTML = 
+                "<p class='success'>" + text + "</p>"
+            }catch (error) {
+                document.getElementById("uploadResult").innerHTML - 
+                "<p class='error'>Ошибка загрузки</p>"
+            }            
+        })
+
+        document.getElementById("searchForm").addEventListener("submit", async function (e) {
+            e.preventDefault()
+
+            let word = document.getElementById("wordInput").value
+
+            try{
+                let response = await fetch("/search?word=" + word);
+                let text = await response.text();
+
+                document.getElementById("searchResult").innerHTML = text;
+            } catch (error) {
+                document.getElementById("searchResult").innerHTML = 
+                "<p class='error'>Ошибка поиска</p>"
+            }
+        })
+    </script>
+</body>
+
+</html>

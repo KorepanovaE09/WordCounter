@@ -1,21 +1,15 @@
-docker compose down -v
-docker compose up -d
+База данных запускается через Docker:
+    docker compose down -v
+    docker compose up -d
+
+docker exec -it file_index_db psql -U index_user -d file_index_db
 
 Пересборка классов:
     javac -cp ".;postgresql.jar" *.java
 Запуск: 
     java -cp ".;postgresql.jar" FileIndexer
 
-Создание таблицы файлов:
-        CREATE TABLE files (
-        id SERIAL PRIMARY KEY,
-        file_path TEXT UNIQUE NOT NULL
-    );
-
-Создание таблицы слов:
-        CREATE TABLE word_counts (
-        id SERIAL PRIMARY KEY,
-        file_id INTEGER REFERENCES files(id),
-        word TEXT NOT NULL,
-        count INTEGER NOT NULL
-    );
+Запуск страницы (через cmd):
+    cd /d D:\ПОЛИТЕХ\мага\2\WordCounter\tomcat\bin
+    catalina.bat run
+    http://localhost:8080/index.html
