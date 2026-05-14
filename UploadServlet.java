@@ -10,8 +10,7 @@ import jakarta.servlet.http.Part;
 @MultipartConfig
 public class UploadServlet extends HttpServlet {
 
-    private static final String SAVE_DIR =
-            "D:\\ПОЛИТЕХ\\мага\\2\\WordCounter\\data";
+    private static final String SAVE_DIR = "D:\\ПОЛИТЕХ\\мага\\2\\WordCounter\\data";
 
     @Override
     protected void doPost(HttpServletRequest request,
@@ -19,9 +18,6 @@ public class UploadServlet extends HttpServlet {
             throws ServletException, IOException {
 
         response.setContentType("text/plain; charset=UTF-8");
-
-        System.out.println("UploadServlet: старт загрузки");
-
         Part filePart = request.getPart("file");
 
         if (filePart == null || filePart.getSize() == 0) {
@@ -29,12 +25,8 @@ public class UploadServlet extends HttpServlet {
             return;
         }
 
-        String fileName = Paths.get(
-                filePart.getSubmittedFileName()
-        ).getFileName().toString();
-
+        String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
         File saveFile = new File(SAVE_DIR, fileName);
-
         System.out.println("Сохранение файла: " + saveFile.getAbsolutePath());
 
         try (InputStream input = filePart.getInputStream();
@@ -47,11 +39,8 @@ public class UploadServlet extends HttpServlet {
                 output.write(buffer, 0, bytesRead);
             }
         }
-
         System.out.println("Файл сохранён");
-
         FileIndexer.processFile(saveFile.getAbsolutePath());
-
         response.getWriter().println("Файл успешно загружен: " + fileName);
     }
 }

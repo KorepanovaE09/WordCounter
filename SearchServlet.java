@@ -17,13 +17,10 @@ public class SearchServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String word = request.getParameter("word");
-
         response.setContentType("text/html; charset=UTF-8");
-
         PrintWriter out = response.getWriter();
 
         if (word == null || word.isEmpty()) {
-
             out.println("<h2>Введите слово</h2>");
             return;
         }
@@ -39,11 +36,8 @@ public class SearchServlet extends HttpServlet {
                     "WHERE wc.word = ? " +
                     "ORDER BY wc.count DESC";
 
-            PreparedStatement ps =
-                    conn.prepareStatement(sql);
-
+            PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, word);
-
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
@@ -53,24 +47,18 @@ public class SearchServlet extends HttpServlet {
                 int count = rs.getInt("count");
 
                 out.println("<div class='result'>");
-
                 out.println("<h3>Файл:</h3>");
                 out.println("<p>" + fileName + "</p>");
-
                 out.println("<h3>Количество:</h3>");
                 out.println("<p>" + count + "</p>");
-
                 out.println("</div>");
 
             } else {
-
                 out.println("<p class='error'>Слово не найдено</p>");
             }
 
         } catch (Exception e) {
-
             out.println("<h2>Ошибка БД</h2>");
-
             e.printStackTrace();
         }
     }

@@ -13,9 +13,6 @@ public class FileIndexer {
     public static ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> index = new ConcurrentHashMap<>();
 
     public static void main(String[] args) {
-
-        System.out.println("СТАРТ ПРОГРАММЫ");
-
         String rootPath = "D:\\ПОЛИТЕХ\\мага\\2\\WordCounter\\data";
 
         ExecutorService executor = Executors.newFixedThreadPool(4);
@@ -35,25 +32,19 @@ public class FileIndexer {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        System.out.println("КОНЕЦ ПРОГРАММЫ");
     }
 
     public static void processFile(String filePath) {
 
         System.out.println("Обрабатка: " + filePath);
-
         ConcurrentHashMap<String, Integer> localMap = new ConcurrentHashMap<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-
             String line;
 
             while ((line = reader.readLine()) != null) {
-
                 line = line.toLowerCase();
                 line = line.replaceAll("[^a-zа-я0-9 ]", " ");
-
                 String[] words = line.split("\\s+");
 
                 for (String word : words) {
@@ -69,18 +60,14 @@ public class FileIndexer {
         }
 
         index.put(filePath, localMap);
-
         System.out.println("Сохранение в БД: " + filePath);
-
         saveToDatabase(filePath, localMap);
     }
 
     public static void saveToDatabase(String filePath, Map<String, Integer> wordMap) {
-
         System.out.println("Подключение к БД...");
 
         try (Connection conn = DB.getConnection()) {
-
             System.out.println("Подключение успешно");
 
             PreparedStatement psFile = conn.prepareStatement(
@@ -90,7 +77,6 @@ public class FileIndexer {
             );
 
             psFile.setString(1, filePath);
-
             ResultSet rs = psFile.executeQuery();
 
             if (!rs.next()) {
@@ -98,13 +84,8 @@ public class FileIndexer {
             }
 
             int fileId = rs.getInt(1);
-
             System.out.println("fileId = " + fileId);
-
-            PreparedStatement psWord = conn.prepareStatement(
-                    "INSERT INTO word_counts(file_id, word, count) VALUES (?, ?, ?)"
-            );
-
+            PreparedStatement psWord = conn.prepareStatement("INSERT INTO word_counts(file_id, word, count) VALUES (?, ?, ?)");
             int count = 0;
 
             for (Map.Entry<String, Integer> entry : wordMap.entrySet()) {
@@ -114,9 +95,7 @@ public class FileIndexer {
                 psWord.addBatch();
                 count++;
             }
-
             psWord.executeBatch();
-
             System.out.println("Сохранено слов: " + count);
 
         } catch (Exception e) {
@@ -126,20 +105,15 @@ public class FileIndexer {
     }
 
     public static void printIndex() {
-
         System.out.println("ЧАСТОТНОСТЬ СЛОВ В ФАЙЛАХ");
 
         for (Map.Entry<String, ConcurrentHashMap<String, Integer>> fileEntry : index.entrySet()) {
-
             String fileName = Paths.get(fileEntry.getKey()).getFileName().toString();
-
             System.out.println("\nФайл: " + fileName);
 
             fileEntry.getValue().entrySet().stream()
                     .sorted((a, b) -> b.getValue() - a.getValue())
-                    .forEach(e ->
-                            System.out.println("   " + e.getKey() + " : " + e.getValue())
-                    );
+                    .forEach(e -> System.out.println("   " + e.getKey() + " : " + e.getValue()));
         }
     }
 }
